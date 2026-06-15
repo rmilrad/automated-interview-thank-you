@@ -36,11 +36,36 @@ export type OutboxItem = {
   card_company?: string | null;
 };
 
+export type EventRow = {
+  id: number;
+  process_id: number | null;
+  title: string | null;
+  start_at: string | null;
+  end_at: string | null;
+  attendees: { email: string; name?: string }[] | null;
+  company: string | null;
+};
+
 export async function getProcesses(): Promise<Process[]> {
   return (await sql`
     select id, company, role, status, stage, notes, updated_at
     from processes order by updated_at desc
   `) as Process[];
+}
+
+export async function getProcessById(id: number): Promise<Process | null> {
+  const r = (await sql`
+    select id, company, role, status, stage, notes, updated_at
+    from processes where id = ${id} limit 1
+  `) as Process[];
+  return r[0] ?? null;
+}
+
+export async function getEventsForProcess(processId: number): Promise<EventRow[]> {
+  return (await sql`
+    select id, process_id, title, start_at, end_at, attendees, company
+    from events where process_id = ${processId} order by start_at desc nulls last
+  `) as EventRow[];
 }
 
 export async function getThreadsForProcess(processId: number): Promise<Thread[]> {

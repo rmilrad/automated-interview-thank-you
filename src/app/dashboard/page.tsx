@@ -53,15 +53,22 @@ export default async function Dashboard() {
         ) : (
           <div className="space-y-2">
             {processes.map((p) => (
-              <div key={p.id} className="rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-3 flex items-center justify-between">
+              <Link
+                key={p.id}
+                href={`/process/${p.id}`}
+                className="group rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-3 flex items-center justify-between hover:border-neutral-600 hover:bg-neutral-900 transition-colors"
+              >
                 <div>
-                  <div className="font-medium">{p.company}{p.role ? <span className="text-neutral-400"> · {p.role}</span> : null}</div>
+                  <div className="font-medium group-hover:text-white">{p.company}{p.role ? <span className="text-neutral-400"> · {p.role}</span> : null}</div>
                   {p.stage && <div className="text-xs text-neutral-500 mt-0.5">{p.stage}</div>}
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full ${p.status === 'active' ? 'bg-emerald-950 text-emerald-400' : 'bg-neutral-800 text-neutral-400'}`}>
-                  {p.status}
-                </span>
-              </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-xs px-2 py-1 rounded-full ${p.status === 'active' ? 'bg-emerald-950 text-emerald-400' : 'bg-neutral-800 text-neutral-400'}`}>
+                    {p.status}
+                  </span>
+                  <span className="text-neutral-600 group-hover:text-neutral-300">→</span>
+                </div>
+              </Link>
             ))}
           </div>
         )}
