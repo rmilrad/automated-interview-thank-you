@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# automated-interview-thank-you
 
-## Getting Started
+A private interview command center. It reads your Gmail and Google Calendar, organizes every
+interview process onto a minimalist dashboard, and prepares a digital thank-you card + draft
+email for each day's interviews. **Nothing is sent until you review and click Approve** — and
+you're always BCC'd on what goes out.
 
-First, run the development server:
+Built with Next.js (App Router), Postgres (Neon), Google OAuth, and the Anthropic API.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## How it works
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. A daily cron syncs Calendar events and interview-related Gmail threads into Postgres.
+2. Emails are classified (interview vs. not) and processes are grouped by company.
+3. For each interview that day, it drafts a thank-you note and a password-protected card page.
+4. You open the **Review** queue, read each draft, and Approve or Skip. Approved notes send
+   from your own Gmail with you BCC'd.
+5. Each thank-you card lives at a permanent `/card/<slug>` link, openable anytime with its password.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. `cp .env.example .env.local` and fill in every value.
+   - **Google**: create a *Desktop app* OAuth client (Gmail + Calendar scopes), then run
+     `node scripts/get-google-token.mjs` to mint `GOOGLE_REFRESH_TOKEN`.
+   - **Database**: a Neon (or any) Postgres connection string.
+   - **Anthropic**: an API key from console.anthropic.com.
+   - `SESSION_SECRET` / `CRON_SECRET`: random strings.
+2. `npm install`
+3. `npm run dev`, open http://localhost:3000, log in with `ADMIN_PASSWORD`.
+4. Backfill from your real mailbox/calendar: `node --import tsx scripts/run-sync.ts`.
 
-## Learn More
+## Deploy (Vercel)
 
-To learn more about Next.js, take a look at the following resources:
+1. Import the repo in Vercel.
+2. Add every variable from `.env.example` as a Project Environment Variable.
+3. Set `NEXT_PUBLIC_BASE_URL` to your deployed URL so card links resolve publicly.
+4. The daily cron is defined in `vercel.json` and runs automatically.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Safety
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- All secrets live in `.env.local` (gitignored) or Vercel env vars — never in the repo.
+- The send step is gated behind manual approval; the app never emails anyone on its own.
