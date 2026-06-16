@@ -19,6 +19,7 @@ export type Thread = {
   last_message_at: string | null;
   confidence: number | null;
   needs_review: boolean;
+  gmail_thread_id?: string | null;
 };
 
 export type OutboxItem = {
@@ -47,9 +48,11 @@ export type EventRow = {
 };
 
 export async function getProcesses(): Promise<Process[]> {
+  // Active processes bubble to the top; rejected (and any non-active) sink to
+  // the bottom. Within each group, most recently updated first.
   return (await sql`
     select id, company, role, status, stage, notes, updated_at
-    from processes order by updated_at desc
+    from processes order by (status <> 'active') asc, updated_at desc
   `) as Process[];
 }
 
@@ -77,7 +80,7 @@ export async function getThreadsForProcess(processId: number): Promise<Thread[]>
 
 export async function getThreadsNeedingReview(): Promise<Thread[]> {
   return (await sql`
-    select id, process_id, contact_email, subject, summary, last_message_at, confidence, needs_review
+    select id, process_id, contact_email, subject, summary, last_message_at, confidence, needs_review, gmail_thread_id
     from threads where needs_review = true order by last_message_at desc nulls last
   `) as Thread[];
 }

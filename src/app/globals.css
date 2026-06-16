@@ -24,3 +24,54 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ---- Thank-you card animations ---- */
+@keyframes ty-confetti-fall {
+  0% { transform: translate3d(0, -12vh, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate3d(var(--drift, 0), 112vh, 0) rotate(720deg); opacity: 1; }
+}
+@keyframes ty-pop-in {
+  0% { transform: scale(0.8) translateY(16px); opacity: 0; }
+  60% { transform: scale(1.03) translateY(0); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+@keyframes ty-fade-up {
+  0% { transform: translateY(14px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes ty-float {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-14px) rotate(3deg); }
+}
+@keyframes ty-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes ty-spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+.ty-confetti {
+  position: fixed;
+  top: 0;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  will-change: transform;
+  animation-name: ty-confetti-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.ty-pop { animation: ty-pop-in 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28) both; }
+.ty-fade-up { animation: ty-fade-up 0.7s ease both; }
+.ty-float { animation: ty-float 3.5s ease-in-out infinite; }
+.ty-gradient {
+  background: linear-gradient(120deg, #fde68a, #fca5a5, #c4b5fd, #93c5fd, #fde68a);
+  background-size: 300% 300%;
+  animation: ty-gradient 12s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ty-confetti, .ty-pop, .ty-fade-up, .ty-float, .ty-gradient { animation: none !important; }
+}
