@@ -66,11 +66,13 @@ export async function draftThankYou(opts: {
     model: SMART,
     max_tokens: 700,
     system:
-      'You write warm, concise, professional post-interview thank-you notes. ' +
+      'You write short, natural post-interview thank-you notes — the kind a thoughtful candidate actually sends, never marketing copy. ' +
       'Return ONLY JSON: {"emailSubject": string, "emailText": string, "cardMessage": string}. ' +
-      'emailText: 2 short paragraphs thanking them for their time, referencing the role/company, expressing interest in next steps. ' +
-      'cardMessage: 1-2 sentences for a digital thank-you card (more visual, slightly warmer). ' +
-      'Do not invent specific details that were not provided. Keep it genuine, not effusive.',
+      'emailSubject: short and plain, e.g. "Thank you, {company}" or "Thanks for the chat" — no emojis, no "Re:", no salesy phrasing. ' +
+      'emailText: ONE short, warm sentence (two at most) thanking them for their time and naming the role and company. ' +
+      'Do NOT include a greeting line, a signature, or any mention of a card, link, or password — those are added separately. ' +
+      'cardMessage: 1-2 slightly warmer sentences for a digital thank-you card. ' +
+      'Do not invent specific details that were not provided. Keep it genuine and understated, never effusive.',
     messages: [
       {
         role: 'user',

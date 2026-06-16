@@ -88,6 +88,14 @@ function base64url(input: string) {
   return Buffer.from(input).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
+// Email headers must be ASCII. Encode any header value containing non-ASCII
+// characters (em-dashes, accented names) as an RFC 2047 base64 encoded-word so
+// clients render them correctly instead of as mojibake.
+function encodeHeader(value: string): string {
+  if (/^[\x20-\x7E]*$/.test(value)) return value;
+  return `=?UTF-8?B?${Buffer.from(value, 'utf8').toString('base64')}?=`;
+}
+
 export async function sendEmail(opts: {
   to: string[];
   bcc?: string[];
@@ -98,7 +106,7 @@ export async function sendEmail(opts: {
 }) {
   const gmail = gmailClient();
   const from = opts.fromName
-    ? `${opts.fromName} <${process.env.GOOGLE_USER_EMAIL}>`
+    ? `${encodeHeader(opts.fromName)} <${process.env.GOOGLE_USER_EMAIL}>`
     : process.env.GOOGLE_USER_EMAIL!;
   const boundary = 'b_' + Math.random().toString(36).slice(2);
   const lines = [
@@ -107,7 +115,7 @@ export async function sendEmail(opts: {
   ];
   if (opts.bcc?.length) lines.push(`Bcc: ${opts.bcc.join(', ')}`);
   lines.push(
-    `Subject: ${opts.subject}`,
+    `Subject: ${encodeHeader(opts.subject)}`,
     'MIME-Version: 1.0',
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
     '',

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProcessById, getThreadsForProcess, getEventsForProcess } from '@/lib/data';
+import { StatusControl } from './ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,9 +41,9 @@ export default async function ProcessDetail({ params }: { params: Promise<{ id: 
       <header className="mt-4 mb-8">
         <h1 className="text-2xl font-semibold tracking-tight">{process.company}</h1>
         {process.role && <p className="text-neutral-400 mt-1">{process.role}</p>}
-        <span className={`inline-block mt-3 text-xs px-2 py-1 rounded-full ${process.status === 'active' ? 'bg-emerald-950 text-emerald-400' : 'bg-neutral-800 text-neutral-400'}`}>
-          {process.status}
-        </span>
+        <div className="mt-3">
+          <StatusControl id={process.id} status={process.status} />
+        </div>
       </header>
 
       <Section title="Schedule">

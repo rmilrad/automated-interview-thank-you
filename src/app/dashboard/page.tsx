@@ -27,6 +27,8 @@ export default async function Dashboard() {
           <p className="text-sm text-neutral-400">Interview pipeline + thank-you automation</p>
         </div>
         <div className="flex items-center gap-5">
+          <Link href="/review" className="text-sm text-neutral-400 hover:text-neutral-100">Review</Link>
+          <Link href="/sent" className="text-sm text-neutral-400 hover:text-neutral-100">Sent</Link>
           <SyncButton />
           <LogoutButton />
         </div>

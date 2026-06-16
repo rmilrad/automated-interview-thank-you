@@ -1,6 +1,7 @@
 import './load-env';
 import { sql } from '../src/lib/db';
 import { draftThankYou } from '../src/lib/anthropic';
+import { emailText, emailHtml } from '../src/lib/sync';
 import { randomSlug, cardPassword } from '../src/lib/util';
 
 // Seeds ONE safe, self-addressed thank-you into the review queue so the approve
@@ -29,10 +30,8 @@ async function main() {
     returning id`) as { id: number }[];
 
   const link = `${baseUrl}/card/${slug}`;
-  const text = `${draft.emailText}\n\nYour thank-you card: ${link}\nPassword: ${password}\n\n— ${senderName}`;
-  const html = `<div style="font-family:sans-serif"><p>${draft.emailText.replace(/\n/g, '<br>')}</p>
-    <p><a href="${link}">Open your thank-you card</a> · Password: <strong>${password}</strong></p>
-    <p>— ${senderName}</p></div>`;
+  const text = emailText(draft.emailText, link, password, senderName);
+  const html = emailHtml(draft.emailText, link, password, senderName);
 
   await sql`
     insert into outbox (card_id, event_id, to_emails, subject, body_html, body_text, status)

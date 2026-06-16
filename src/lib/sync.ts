@@ -132,28 +132,20 @@ export async function runSync() {
   return { threads: threadCount, events: eventCount };
 }
 
-function emailText(text: string, link: string, password: string, sender: string): string {
+export function emailText(text: string, link: string, password: string, sender: string): string {
   return `${text}
 
-I made you a quick digital thank-you card — you can open it anytime here:
-${link}
-Password: ${password}
+${sender}
 
-— ${sender}
-
-(This note was prepared and sent automatically on ${sender}'s behalf after our interview. The card lives on a small personal site ${sender} built.)`;
+P.S. I put together a small thank-you card for you — ${link} (password: ${password})`;
 }
 
-function emailHtml(text: string, link: string, password: string, sender: string): string {
+export function emailHtml(text: string, link: string, password: string, sender: string): string {
   const paras = text.split('\n').filter(Boolean).map((p) => `<p style="margin:0 0 14px">${p}</p>`).join('');
-  return `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;line-height:1.55;color:#111;max-width:520px">
+  return `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:520px">
   ${paras}
-  <div style="margin:22px 0;padding:16px;border:1px solid #eee;border-radius:12px;background:#fafafa">
-    <a href="${link}" style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600">Open your thank-you card</a>
-    <p style="margin:12px 0 0;font-size:13px;color:#666">Password: <strong>${password}</strong></p>
-  </div>
-  <p style="margin:0;font-weight:600">— ${sender}</p>
-  <p style="margin:14px 0 0;font-size:12px;color:#999">This note was prepared and sent automatically on ${sender}'s behalf after our interview.</p>
+  <p style="margin:0 0 14px">${sender}</p>
+  <p style="margin:0;font-size:13px;color:#666">P.S. I put together a small thank-you card for you — <a href="${link}" style="color:#111">open it here</a> (password: <strong>${password}</strong>).</p>
 </div>`;
 }
 

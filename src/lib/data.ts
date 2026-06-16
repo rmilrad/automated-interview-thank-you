@@ -92,3 +92,16 @@ export async function getPendingOutbox(): Promise<OutboxItem[]> {
     order by o.created_at desc
   `) as OutboxItem[];
 }
+
+export type SentItem = OutboxItem & { sent_at: string | null };
+
+export async function getSentOutbox(): Promise<SentItem[]> {
+  return (await sql`
+    select o.id, o.card_id, o.event_id, o.to_emails, o.subject, o.body_html, o.body_text,
+           o.status, o.created_at, o.sent_at, c.slug as card_slug, c.password as card_password, c.company as card_company
+    from outbox o
+    left join cards c on c.id = o.card_id
+    where o.status = 'sent'
+    order by o.sent_at desc nulls last
+  `) as SentItem[];
+}
